@@ -1,3 +1,5 @@
+# FIX in ElFinderConfigurationReader.php to use SFTP
+
 FMElfinderBundle
 ================
 
