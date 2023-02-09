@@ -4,6 +4,7 @@ namespace FM\ElfinderBundle\Configuration;
 
 use FM\ElfinderBundle\Security\ElfinderSecurityInterface;
 use League\Flysystem\AdapterInterface;
+use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -11,7 +12,8 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Adapter\Ftp;
 use Spatie\FlysystemDropbox\DropboxAdapter;
-use League\Flysystem\Sftp\SftpAdapter;
+//use League\Flysystem\Sftp\SftpAdapter;
+use League\Flysystem\PhpseclibV3\SftpAdapter;
 use League\Flysystem\AwsS3v2\AwsS3Adapter as AwsS3v2;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as AwsS3v3;
 use League\Flysystem\GridFS\GridFSAdapter;
@@ -198,16 +200,16 @@ class ElFinderConfigurationReader implements ElFinderConfigurationProviderInterf
 
                 break;
             case 'sftp':
-                $settings = [
-                  'host'       => $opt['sftp']['host'],
-                  'port'       => $opt['sftp']['port'],
-                  'username'   => $opt['sftp']['username'],
-                  'password'   => $opt['sftp']['password'],
-                  'privateKey' => $opt['sftp']['privateKey'],
-                  'root'       => $opt['sftp']['root'],
-                  'timeout'    => $opt['sftp']['timeout'],
-                ];
-                $filesystem = new Filesystem(new SftpAdapter($settings));
+                $settings = new SftpConnectionProvider(
+                    $opt['sftp']['host'],
+                    $opt['sftp']['username'],
+                    $opt['sftp']['password'],
+                    $opt['sftp']['privateKey'], 
+                    null,
+                    $opt['sftp']['port']
+                );
+
+                $filesystem = new Filesystem(new SftpAdapter($settings, $opt['sftp']['root']));
 
                 break;
             case 'azure':
